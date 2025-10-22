@@ -1,16 +1,49 @@
-# React + Vite
+# 🚀 Cesar Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend moderno desarrollado con **React**, diseñado con un enfoque limpio, profesional y adaptable para aplicaciones empresariales.  
+Incluye autenticación, registro de usuarios y perfil conectado a una API backend.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🧩 Tecnologías principales
 
-## React Compiler
+- ⚛️ **React 18+**
+- 🧠 **Context API** (Manejo de autenticación)
+- 🎨 **TailwindCSS** (Diseño moderno y responsivo)
+- 🔄 **React Router DOM** (Navegación entre páginas)
+- ☁️ **Vercel** (Despliegue en la nube)
+- ⚙️ **Vite / Create React App** (según configuración)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 📁 Estructura del proyecto
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+src/
+├─ auth/
+│ └─ context/
+│ └─ AuthContext.jsx # Manejo global de login/register/logout
+├─ features/
+│ ├─ profile/
+│ │ ├─ pages/
+│ │ │ └─ Profile.jsx # Vista de perfil
+│ │ └─ hooks/
+│ │ └─ useProfile.js
+│ └─ auth/
+│ ├─ pages/
+│ │ ├─ Login.jsx # Página de inicio de sesión
+│ │ └─ Register.jsx # Página de registro
+├─ router.jsx # Definición de rutas
+├─ main.jsx # Punto de entrada principal
+└─ App.jsx # Enrutamiento global
+
+
+---
+
+## ⚙️ Instalación
+
+Clona el repositorio y entra al proyecto:
+
+```bash
+git clone https://github.com/CesarDT-bit/Cesar-Frontend.git
+cd Cesar-Frontend
+
