@@ -1,49 +1,26 @@
-# 🚀 Cesar Frontend
+# Blog Personal - React + Vite
 
-Frontend moderno desarrollado con **React**, diseñado con un enfoque limpio, profesional y adaptable para aplicaciones empresariales.  
-Incluye autenticación, registro de usuarios y perfil conectado a una API backend.
+Una aplicación de blog personal desarrollada con React, Vite y Tailwind CSS.
 
----
+## 🚀 Características
 
-## 🧩 Tecnologías principales
+- ✨ Diseño moderno y responsive
+- 📝 Sistema de blog con posts
+- 🔐 Autenticación de usuarios
+- 👤 Perfiles de usuario
+- 🎨 Interfaz con Tailwind CSS
+- ⚡ Desarrollo rápido con Vite
 
-- ⚛️ **React 18+**
-- 🧠 **Context API** (Manejo de autenticación)
-- 🎨 **TailwindCSS** (Diseño moderno y responsivo)
-- 🔄 **React Router DOM** (Navegación entre páginas)
-- ☁️ **Vercel** (Despliegue en la nube)
-- ⚙️ **Vite / Create React App** (según configuración)
+## 🛠️ Tecnologías
 
----
+- **Frontend:** React, Vite, Tailwind CSS
+- **Estado:** React Context API
+- **Rutas:** React Router DOM
+- **HTTP:** Fetch API
 
-## 📁 Estructura del proyecto
+## 📦 Instalación
 
-src/
-├─ auth/
-│ └─ context/
-│ └─ AuthContext.jsx # Manejo global de login/register/logout
-├─ features/
-│ ├─ profile/
-│ │ ├─ pages/
-│ │ │ └─ Profile.jsx # Vista de perfil
-│ │ └─ hooks/
-│ │ └─ useProfile.js
-│ └─ auth/
-│ ├─ pages/
-│ │ ├─ Login.jsx # Página de inicio de sesión
-│ │ └─ Register.jsx # Página de registro
-├─ router.jsx # Definición de rutas
-├─ main.jsx # Punto de entrada principal
-└─ App.jsx # Enrutamiento global
-
-
----
-
-## ⚙️ Instalación
-
-Clona el repositorio y entra al proyecto:
-
+1. Clona el repositorio:
 ```bash
-git clone https://github.com/CesarDT-bit/Cesar-Frontend.git
-cd Cesar-Frontend
-
+git clone https://github.com/tu-usuario/tu-repositorio.git
+cd tu-repositorio

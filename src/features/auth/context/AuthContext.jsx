@@ -12,10 +12,27 @@ const authReducer = (state, action) => {
         ...state, 
         loading: false, 
         isAuthenticated: true, 
-        user: action.payload,
+        user: action.payload.user,
         error: null 
       };
     case 'LOGIN_FAILURE':
+      return { 
+        ...state, 
+        loading: false, 
+        isAuthenticated: false, 
+        error: action.payload 
+      };
+    case 'REGISTER_START':
+      return { ...state, loading: true, error: null };
+    case 'REGISTER_SUCCESS':
+      return { 
+        ...state, 
+        loading: false, 
+        isAuthenticated: true, 
+        user: action.payload.user,
+        error: null 
+      };
+    case 'REGISTER_FAILURE':
       return { 
         ...state, 
         loading: false, 
@@ -28,7 +45,7 @@ const authReducer = (state, action) => {
         isAuthenticated: false, 
         user: null,
         error: null,
-        loading: false // 🔥 Asegurar que loading sea false al logout
+        loading: false
       };
     case 'SET_USER':
       return { 
@@ -36,11 +53,16 @@ const authReducer = (state, action) => {
         isAuthenticated: true, 
         user: action.payload 
       };
-    case 'CLEAR_AUTH_STATE': // 🔥 NUEVO ACTION
+    case 'CLEAR_AUTH_STATE':
       return { 
         ...state, 
         loading: false, 
         error: null 
+      };
+    case 'UPDATE_USER':
+      return {
+        ...state,
+        user: { ...state.user, ...action.payload }
       };
     default:
       return state;
@@ -63,54 +85,122 @@ export const AuthProvider = ({ children }) => {
 
   const checkAuth = async () => {
     try {
-      const token = localStorage.getItem('token');
-      if (token) {
-        const user = await authService.getProfile();
-        dispatch({ type: 'SET_USER', payload: user });
+      console.log('🔍 Verificando autenticación...');
+      
+      // Verificar si hay token en cookies
+      const token = document.cookie.includes('token');
+      if (!token) {
+        console.log('❌ No hay token en cookies');
+        return;
       }
+
+      // Obtener perfil del usuario
+      const userProfile = await authService.getProfile();
+      console.log('✅ Usuario autenticado:', userProfile);
+      
+      dispatch({ type: 'SET_USER', payload: userProfile });
     } catch (error) {
-      console.log('No hay usuario autenticado');
+      console.log('❌ No hay usuario autenticado:', error.message);
+      // No hacer nada, simplemente el usuario no está autenticado
     }
   };
 
   const login = async (credentials) => {
     dispatch({ type: 'LOGIN_START' });
     try {
+      console.log('🔐 Iniciando sesión...', credentials);
+      
       const response = await authService.login(credentials);
-      const user = await authService.getProfile();
-      dispatch({ type: 'LOGIN_SUCCESS', payload: user });
+      console.log('✅ Login exitoso:', response);
+      
+      // Obtener el perfil del usuario después del login
+      const userProfile = await authService.getProfile();
+      console.log('👤 Perfil obtenido:', userProfile);
+      
+      dispatch({ 
+        type: 'LOGIN_SUCCESS', 
+        payload: { user: userProfile, token: response.token }
+      });
+      
       return response;
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Error al iniciar sesión';
+      console.error('❌ Error en login:', error);
+      
+      let errorMessage = 'Error al iniciar sesión';
+      
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.response?.data?.errors) {
+        // Si hay errores de validación, mostrar el primero
+        const firstError = Object.values(error.response.data.errors)[0];
+        errorMessage = Array.isArray(firstError) ? firstError[0] : firstError;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       dispatch({ type: 'LOGIN_FAILURE', payload: errorMessage });
-      throw error;
+      throw new Error(errorMessage);
     }
   };
 
   const register = async (userData) => {
-  dispatch({ type: 'LOGIN_START' });
-  try {
-    const response = await authService.register(userData);
-    // 🔥 ESTA LÍNEA ES CRÍTICA - debe estar en tu AuthContext
-    dispatch({ type: 'CLEAR_AUTH_STATE' });
-    return response;
-  } catch (error) {
-    const errorMessage = error.response?.data?.message || 'Error al registrar usuario';
-    dispatch({ type: 'LOGIN_FAILURE', payload: errorMessage });
-    throw error;
-  }
-};
-
-  const logout = async () => {
+    dispatch({ type: 'REGISTER_START' });
     try {
-      await authService.logout();
-      dispatch({ type: 'LOGOUT' });
+      console.log('📝 Registrando usuario...', userData);
+      
+      const response = await authService.register(userData);
+      console.log('✅ Registro exitoso:', response);
+      
+      // Después del registro, hacer login automáticamente
+      if (response.token) {
+        const userProfile = await authService.getProfile();
+        
+        dispatch({ 
+          type: 'REGISTER_SUCCESS', 
+          payload: { user: userProfile, token: response.token }
+        });
+      } else {
+        // Si el registro no incluye login automático, solo mostrar éxito
+        dispatch({ type: 'CLEAR_AUTH_STATE' });
+      }
+      
+      return response;
     } catch (error) {
-      console.error('Error al cerrar sesión:', error);
+      console.error('❌ Error en registro:', error);
+      
+      let errorMessage = 'Error al registrar usuario';
+      
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.response?.data?.errors) {
+        // Si hay errores de validación, mostrar el primero
+        const firstError = Object.values(error.response.data.errors)[0];
+        errorMessage = Array.isArray(firstError) ? firstError[0] : firstError;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      dispatch({ type: 'REGISTER_FAILURE', payload: errorMessage });
+      throw new Error(errorMessage);
     }
   };
 
-  // 🔥 NUEVA FUNCIÓN: Limpiar estado de autenticación
+  const logout = async () => {
+    try {
+      console.log('🚪 Cerrando sesión...');
+      await authService.logout();
+    } catch (error) {
+      console.error('❌ Error en logout:', error);
+      // Aún así continuar con el logout local
+    } finally {
+      dispatch({ type: 'LOGOUT' });
+    }
+  };
+
+  const updateUser = (userData) => {
+    dispatch({ type: 'UPDATE_USER', payload: userData });
+  };
+
   const clearAuthState = () => {
     dispatch({ type: 'CLEAR_AUTH_STATE' });
   };
@@ -121,7 +211,8 @@ export const AuthProvider = ({ children }) => {
     register,
     logout,
     checkAuth,
-    clearAuthState // 🔥 Exportar la nueva función
+    clearAuthState,
+    updateUser
   };
 
   return (
